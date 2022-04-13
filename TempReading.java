@@ -2,79 +2,53 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
-public class BagOfGifts {
+public class TempReading {
   public static void main(String[] args) {
-    // Intializing bag of gifts with unique IDs 1 - 500,000
-    ArrayList<Integer> giftBag = new ArrayList<Integer>();
-    for (int i = 1; i < 500001; i++) {
-      giftBag.add(i);
-    }
-    Collections.shuffle(giftBag);
-
     // Intializing threads
-    Servant[] threads = new Servant[4];
-    for (int i = 0; i < 4; i++) {
-      threads[i] = new Servant();
+    tempModule[] threads = new tempModule[8];
+    for (int i = 0; i < 8; i++) {
+      threads[i] = new tempModule();
       threads[i].start();
     }
-
-    // Alternating threads between adding and removing gifts to shared LinkedList
-    Node giftListTail = new Node(999999);
-    Node giftListHead = new Node(-1, giftListTail);
+    // Adding temperatures to shared LinkedList
+    Node tempListTail = new Node(1000);
+    Node tempListHead = new Node(-1000, tempListTail);
     ArrayList<Integer> chainTrack = new ArrayList<Integer>();
-    int addOrRem = 2;
-    while (!giftBag.isEmpty()) {
-      if ((addOrRem % 2) == 0) {
-        for (int i = 0; i < 4; i++) {
-          if (giftBag.isEmpty()) continue;
-          int giftID = giftBag.remove(0);
-          chainTrack.add(giftID);
-          threads[i].addGift2List(giftListHead, giftID);
-        }
-      }
-      else {
-        for (int i = 0; i < 4; i++) {
-          if (chainTrack.isEmpty()) continue;
-          int giftID = chainTrack.remove(0);
-          threads[i].WriteThankYou(giftListHead, giftID);
-        }
-      }
-      /*
-      Node tempNode = giftListHead;
-      while (tempNode.next != null) {
-        System.out.printf("%d, ", tempNode.item);
-        tempNode = tempNode.next.getReference();
-      }
-      System.out.println();*/
-      addOrRem++;
-    }
-
-    // Code to handle left over presents
-    while (!chainTrack.isEmpty()) {
-      for (int i = 0; i < 4; i++) {
-        if (chainTrack.isEmpty()) continue;
-        int giftID = chainTrack.remove(0);
-        threads[i].WriteThankYou(giftListHead, giftID);
+    for (int min = 0; min < 60; min++) {
+      for (int i = 0; i < 8; i++) {
+        Random r = new Random();
+        int randomTemp = r.nextInt(171) - 100;
+        threads[i].addTemp2List(tempListHead, randomTemp);
       }
     }
-    /*
-    Node tempNode = giftListHead;
-    while (tempNode.next != null) {
+    // Printing the temperatures
+    Node tempNode = tempListHead;
+    tempNode = tempNode.next.getReference();
+    System.out.printf("5 lowest temps recorded this hour: [");
+    for (int i = 0; i < 4; i++) {
       System.out.printf("%d, ", tempNode.item);
       tempNode = tempNode.next.getReference();
-    }*/
-
+    }
+    System.out.println(tempNode.item + "]");
+    Queue<Integer> highTemp = new LinkedList<>();
+    while (tempNode.next != null) {
+      if (highTemp.size() > 4) {
+        highTemp.remove();
+        highTemp.add(tempNode.item);
+      }
+      else {
+        highTemp.add(tempNode.item);
+      }
+      tempNode = tempNode.next.getReference();
+    }
+    System.out.printf("5 highest temps recorded this hour: ");
+    System.out.println(highTemp);
   }
 }
 
-class Servant extends Thread {
-  public void addGift2List(Node head, int giftID) {
-    head.add(giftID, head);
-  }
-  public void WriteThankYou(Node head, int giftID) {
-    if (head.remove(giftID, head)) {
-      // System.out.println("Thank you note for gift #" + giftID);
-    }
+class tempModule extends Thread {
+  public void addTemp2List(Node head, int temp) {
+    head.add(temp, head);
   }
 }
 
