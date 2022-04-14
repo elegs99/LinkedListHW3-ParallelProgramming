@@ -5,6 +5,20 @@ The reason there would be presents left in the bag is because we are alternating
 
 The solution I came up with for this problem is to have another check for if the list is empty once the threads are completely finished adding. This ensures that any gifts left over will always be handled even if the threads are held up for a long time.
 
-<br><br>
+<br>
+
 Problem 2:<br>
 This program runs very fast as it is just adding 480 values to the linked list then printing those values. There is guarenteed to be progress as I am using the lock free list implmentation that was shown to us in chapter 9. Using this type of fine grain locking I can ensure there will be no deadlock even when all threads are adding to the list simultaneously.
+
+<br>
+<br>
+<br>
+
+To run my programs first navigate to directory with the two java files then enter the following commands in your terminal:
+
+javac BagOfGifts.java<br>
+java BagOfGifts
+
+
+javac TempReading.java<br>
+java TempReading
